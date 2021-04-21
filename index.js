@@ -19,26 +19,39 @@ const MongoStore = connectMongo(session)
 const app = express()
 
 app.use(bodyParser.json())
+
+// 設定跨域套件
 app.use(cors({
+  // origin 為請求來源網域, callback 為是否允許的回應
   origin (origin, callback) {
-    // 直接開網頁，不是 ajax 時，origin 是 undefined
-    if (origin === undefined) {
-      callback(null, true)
-    } else {
-      if (process.env.ALLOW_CORS === 'true') {
-        // 開發環境，允許
-        callback(null, true)
-      } else if (origin.includes('github')) {
-        // 非開發環境，但是從 github 過來，允許
-        callback(null, true)
-      } else {
-        // 不是開發也不是從 github 過來，拒絕
-        callback(new Error('Not allowed'), false)
-      }
-    }
+    // 允許任何來源網域的請求
+    callback(null, true)
   },
+  // 允許跨域認證
   credentials: true
 }))
+
+// app.use(cors({
+//   origin (origin, callback) {
+//     // 直接開網頁，不是 ajax 時，origin 是 undefined
+//     if (origin === undefined) {
+//       callback(null, true)
+//     } else {
+//       if (process.env.ALLOW_CORS === 'true') {
+//         // 開發環境，允許
+//         callback(null, true)
+//       } else if (origin.includes('github')) {
+//         // 非開發環境，但是從 github 過來，允許
+//         callback(null, true)
+//       } else {
+//         // 不是開發也不是從 github 過來，拒絕
+//         callback(new Error('Not allowed'), false)
+//       }
+//     }
+//   },
+//   credentials: true
+// }))
+
 app.use(session({
   secret: 'album',
   // 將 session 存入 mongodb
